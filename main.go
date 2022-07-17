@@ -2,6 +2,8 @@ package main
 
 import (
 	"github.com/gofiber/fiber/v2"
+	"log"
+	"os"
 )
 
 type App struct {
@@ -9,11 +11,16 @@ type App struct {
 }
 
 func main() {
+	port := os.Getenv("PORT")
+	if port == "" {
+		log.Fatal("env var $PORT must be set")
+	}
+
 	a := App{app: fiber.New()}
-	a.Run()
+	a.Run(port)
 }
 
-func (a *App) Run() {
+func (a *App) Run(port string) {
 	a.app.Get("/all", func(c *fiber.Ctx) error {
 		return c.JSON(GetAll())
 	})
@@ -52,7 +59,7 @@ func (a *App) Run() {
 		}
 	})
 
-	err := a.app.Listen(":3000")
+	err := a.app.Listen(":" + port)
 	if err != nil {
 		panic(err)
 	}
