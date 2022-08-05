@@ -6,7 +6,11 @@ require github.com/gofiber/fiber/v2 v2.35.0
 
 require (
 	github.com/andybalholm/brotli v1.0.4 // indirect
+	github.com/go-playground/locales v0.14.0 // indirect
+	github.com/go-playground/universal-translator v0.18.0 // indirect
+	github.com/go-playground/validator v9.31.0+incompatible // indirect
 	github.com/klauspost/compress v1.15.0 // indirect
+	github.com/leodido/go-urn v1.2.1 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasthttp v1.38.0 // indirect
 	github.com/valyala/tcplisten v1.0.0 // indirect
