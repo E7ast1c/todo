@@ -2,8 +2,6 @@ package main
 
 import (
 	"fmt"
-
-	"github.com/gofiber/fiber/v2"
 )
 
 type ToDoList map[uint16]Task
@@ -18,7 +16,7 @@ type ID struct {
 }
 
 type Task struct {
-	Title       string `json:"title" validate:"required,min=3,max=32"`
+	Title       string `json:"title"`
 	Description string `json:"description,omitempty"`
 	Completed   bool   `json:"completed,omitempty"`
 	Favorites   bool   `json:"favorites,omitempty"`
@@ -30,24 +28,22 @@ func GetAll() *ToDoList {
 	return &toDoList
 }
 
-func Add(c *fiber.Ctx) error {
-	t := new(Task)
-	if err := c.BodyParser(t); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(err.Error())
-	}
-
-	if errors := ValidateStruct(t); errors != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(errors)
-	}
-
+func Add(nt Task) (*ToDoList, error) {
 	for _, et := range toDoList {
-		if t.Title == et.Title {
-			return c.Status(fiber.StatusBadRequest).JSON(fmt.Errorf("duplicate title: %+v", et))
+		if nt.Title == et.Title {
+			return nil, fmt.Errorf("duplicate title %+v", et)
 		}
 	}
 
-	toDoList[uint16(len(toDoList)+1)] = *t
-	return c.Status(fiber.StatusOK).JSON(&toDoList)
+	var ind = uint16(len(toDoList))
+	for true {
+		if _, ok := toDoList[ind]; !ok {
+			break
+		}
+		ind++
+	}
+	toDoList[ind] = nt
+	return &toDoList, nil
 }
 
 func Delete(id uint16) (*ToDoList, error) {

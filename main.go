@@ -1,11 +1,9 @@
 package main
 
 import (
+	"github.com/gofiber/fiber/v2"
 	"log"
 	"os"
-
-	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/cors"
 )
 
 type App struct {
@@ -23,15 +21,20 @@ func main() {
 }
 
 func (a *App) Run(port string) {
-	a.app.Use(cors.New(cors.Config{
-		AllowOrigins: "*",
-		AllowHeaders: "Origin, Content-Type, Accept",
-	}))
-
 	a.app.Get("/all", func(c *fiber.Ctx) error {
 		return c.JSON(GetAll())
 	})
-	a.app.Post("/add", Add)
+	a.app.Post("/add", func(c *fiber.Ctx) error {
+		t := new(Task)
+		if err := c.BodyParser(t); err != nil {
+			return fiber.NewError(fiber.StatusBadRequest, err.Error())
+		}
+		if res, err := Add(*t); err != nil {
+			return fiber.NewError(fiber.StatusBadRequest, err.Error())
+		} else {
+			return c.JSON(res)
+		}
+	})
 	a.app.Put("/update", func(c *fiber.Ctx) error {
 		ct := new(CombinedTask)
 		if err := c.BodyParser(ct); err != nil {
