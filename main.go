@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 	"log"
 	"os"
 )
@@ -21,6 +22,11 @@ func main() {
 }
 
 func (a *App) Run(port string) {
+	a.app.Use(cors.New(cors.Config{
+		AllowOrigins: "*",
+		AllowHeaders: "Origin, Content-Type, Accept",
+	}))
+
 	a.app.Get("/all", func(c *fiber.Ctx) error {
 		return c.JSON(GetAll())
 	})
